@@ -1,9 +1,7 @@
-annotated-types==0.7.0
-greenlet==3.5.1
-pydantic==2.13.4
-pydantic-settings==2.14.1
-pydantic_core==2.46.4
-python-dotenv==1.2.2
+psycopg2-binary==2.9.11
+PySide6==6.10.1
+PySide6_Addons==6.10.1
+PySide6_Essentials==6.10.1
+shiboken6==6.10.1
 SQLAlchemy==2.0.50
-typing-inspection==0.4.2
 typing_extensions==4.15.0
