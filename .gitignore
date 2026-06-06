@@ -47,3 +47,5 @@ tmp/
 downloads/
 media/
 uploads/
+
+test.py
