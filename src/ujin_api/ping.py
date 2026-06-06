@@ -1,18 +1,17 @@
 import httpx
-from ..core.client_api import ClientAPI
+
+from src.core.client_api import ClientAPI
 
 
-class PingFetch():
-    def __init__(self):
+class PingFetch:
+    def __init__(self, client: ClientAPI | None = None):
         self.service = "ping"
-    
+        if client is None:
+            client = ClientAPI()
+        self.client = client
+
     async def fetch_data(self):
-        async with httpx.AsyncClient() as client:
-            try:
-                url = f"{ClientAPI().url}/{self.service}"
-                response = await client.get(url, params=ClientAPI().params)
-                response.raise_for_status()
-                print(response.status_code)
-            except httpx.HTTPError as e:
-                print("Ping failed:", str(e))
-                
+        try:
+            return await self.client.fetch_data(self.service)
+        except httpx.HTTPError as e:
+            return {"error": str(e)}
