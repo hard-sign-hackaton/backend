@@ -1,6 +1,6 @@
 services:
   postgres:
-    image: postgres:18
+    image: postgres:17
     container_name: postgres
     environment:
       POSTGRES_DB: DisplayDB
@@ -23,7 +23,7 @@ services:
       postgres:
         condition: service_healthy
     environment:
-      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/DisplayDB
+      DATABASE_URL: postgresql+asyncpg://postgres:postgres@postgres:5432/DisplayDB
     ports:
       - "8000:8000"
 
