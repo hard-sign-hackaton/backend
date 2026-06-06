@@ -9,6 +9,7 @@ class ClientAPI:
         self.api_key = settings.API_KEY
         self.params = {"token": self.api_key}
         self.timeout = timeout
+        self.transport = httpx.HTTPTransport(retries=settings.MAX_RETRIES)
 
     async def fetch_data(self, endpoint: str, **params):
         request_params = {
@@ -18,7 +19,7 @@ class ClientAPI:
         endpoint = endpoint.lstrip("/")
 
         try:
-            async with httpx.AsyncClient(timeout=self.timeout) as client:
+            async with httpx.AsyncClient(timeout=self.timeout, transport=self.transport) as client:
                 response = await client.get(f"{self.url}/{endpoint}", params=request_params)
             response.raise_for_status()
             try:
