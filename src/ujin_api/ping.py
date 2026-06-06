@@ -2,7 +2,7 @@ import httpx
 from ..core.client_api import ClientAPI
 
 
-class PingService():
+class PingFetch():
     def __init__(self):
         self.service = "ping"
     
