@@ -1,8 +1,10 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from src.config import settings
+from src.logging_config import setup_logging
 from src.api import displays, health
 
+setup_logging()
 app = FastAPI(title="Display API", version="1.0")
 
 app.add_middleware(
