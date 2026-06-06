@@ -1,21 +1,21 @@
 from src.core.client_api import ClientAPI
 
 
-class ParkingFetch:
+class StorageFetch:
     def __init__(self, client: ClientAPI | None = None):
-        self.base_path = "api/v1/parking"
+        self.base_path = "api/v1/storage"
         if client is None:
             client = ClientAPI()
         self.api = client
 
-    async def get_parkings_list(self, complexes=None, buildings=None):
+    async def get_storage_list(self, complexes=None, buildings=None):
         endpoint = f"{self.base_path}/list"
         return await self.api.fetch_data(
             endpoint=endpoint,
             **{"complexes[]": complexes, "buildings[]": buildings},
         )
         
-    async def get_parkings(self, type:str,  complexes=None, buildings=None):
+    async def get_storage(self, type:str,  complexes=None, buildings=None):
         endpoint = f"{self.base_path}/{type}"
         return await self.api.fetch_data(
             endpoint=endpoint,
@@ -23,7 +23,7 @@ class ParkingFetch:
         )
     
     async def get_number_of_type(self, type: str, complexes=None, buildings=None):
-        result = await self.get_parkings(type, complexes=complexes, buildings=buildings)
+        result = await self.get_storage(type, complexes=complexes, buildings=buildings)
         items = result['data'].get('items', [])
         
         complex_list = None
@@ -43,8 +43,7 @@ class ParkingFetch:
                 if building_list is not None and building.get('building_id') not in building_list:
                     continue
                 
-                for zone in building.get('zones', []):
-                    for spot in zone.get('spots', []):
-                        if spot.get('status') == type:
-                            count += 1
+                for storage in building.get('storages', []):
+                    if storage.get('assignment_type') == type:
+                        count += 1
         return count
