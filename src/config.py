@@ -11,6 +11,7 @@ class Settings(BaseSettings):
     API_KEY : str = "api_key"
     API_URL: str = "https://hck-api.unicorn.icu"
     MAX_RETRIES: int = 3
+    LOG_LEVEL: str = "INFO"
 
     class Config:
         env_file = ".env"
