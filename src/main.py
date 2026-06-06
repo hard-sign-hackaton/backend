@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from src.config import settings
 from src.core.database import engine, Base
 import src.models
-
+from src.api import health
 
 app = FastAPI(title="Display API", version="1.0")
 
@@ -13,6 +13,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.include_router(health.router)
 
 @app.on_event("startup")
 async def on_startup():
