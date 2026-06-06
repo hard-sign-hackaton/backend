@@ -15,15 +15,15 @@ class ParkingFetch:
             **{"complexes[]": complexes, "buildings[]": buildings},
         )
         
-    async def get_free_parkings(self, complexes=None, buildings=None):
-        endpoint = f"{self.base_path}/free"
+    async def get_parkings(self, type:str,  complexes=None, buildings=None):
+        endpoint = f"{self.base_path}/{type}"
         return await self.api.fetch_data(
             endpoint=endpoint,
             **{"complexes[]": complexes, "buildings[]": buildings},
         )
     
-    async def get_number_of_free(self, complexes=None, buildings=None):
-        result = await self.get_free_parkings(complexes=complexes, buildings=buildings)
+    async def get_number_of_type(self, type: str, complexes=None, buildings=None):
+        result = await self.get_parkings(type, complexes=complexes, buildings=buildings)
         items = result['data'].get('items', [])
         
         complex_list = None
@@ -45,6 +45,6 @@ class ParkingFetch:
                 
                 for zone in building.get('zones', []):
                     for spot in zone.get('spots', []):
-                        if spot.get('status') == 'free':
+                        if spot.get('status') == type:
                             free_count += 1
         return free_count
