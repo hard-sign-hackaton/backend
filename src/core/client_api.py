@@ -15,8 +15,9 @@ class ClientAPI:
             try:
                 response = await client.get(f"{self.url}/{endpoint.lstrip('/')}", params=params)
                 response.raise_for_status()
-                if response['error'] == "1": raise HTTPException(404)
-                return response.json()
+                response_json = response.json()
+                if response_json['error'] != 0: raise Exception(response_json["error"])
+                return response_json['data']
             except httpx.HTTPError as e:
                 return {"error": str(e)}
     
