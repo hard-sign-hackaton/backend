@@ -12,6 +12,7 @@ class Settings(BaseSettings):
     API_URL: str = "https://hck-api.unicorn.icu"
     MAX_RETRIES: int = 3
     LOG_LEVEL: str = "INFO"
+    NEWS_POLL_INTERVAL_SECONDS: int = 60
 
     class Config:
         env_file = ".env"

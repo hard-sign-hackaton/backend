@@ -1,3 +1,4 @@
+import asyncio
 import logging
 import uuid
 from typing import Any
@@ -128,6 +129,7 @@ class NewsWatcherService:
             len(items),
             delivered_count,
         )
+
         return {
             "building_id": building_id,
             "changed": True,
@@ -144,6 +146,25 @@ class NewsWatcherService:
         for building_id in building_ids:
             results.append(await self.check_building_news(db, building_id))
         return results
+
+    async def run_polling(
+        self,
+        session_factory,
+        interval_seconds: int,
+    ) -> None:
+        logger.info("Фоновая проверка новостей запущена: interval_seconds=%s", interval_seconds)
+        try:
+            while True:
+                try:
+                    async with session_factory() as db:
+                        await self.check_all_buildings(db)
+                except Exception:
+                    logger.exception("Ошибка фоновой проверки новостей")
+
+                await asyncio.sleep(interval_seconds)
+        except asyncio.CancelledError:
+            logger.info("Фоновая проверка новостей остановлена")
+            raise
 
 
 news_watcher_service = NewsWatcherService(news_service, connection_manager)
