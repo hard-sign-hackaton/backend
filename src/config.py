@@ -13,6 +13,7 @@ class Settings(BaseSettings):
     MAX_RETRIES: int = 3
     LOG_LEVEL: str = "INFO"
     NEWS_POLL_INTERVAL_SECONDS: int = 60
+    EMERGENCY_POLL_INTERVAL_SECONDS: int = 5
 
     class Config:
         env_file = ".env"

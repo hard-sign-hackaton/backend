@@ -5,8 +5,9 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from src.config import settings
 from src.core.database import SessionLocal
-from src.api import displays, health, news, ws
+from src.api import displays, emergency, health, news, ws
 from src.logging_config import setup_logging
+from src.services.emergency_watcher import emergency_watcher_service
 from src.services.news_watcher import news_watcher_service
 
 setup_logging()
@@ -20,16 +21,24 @@ async def lifespan(app: FastAPI):
             interval_seconds=settings.NEWS_POLL_INTERVAL_SECONDS,
         )
     )
+    emergency_watcher_task = asyncio.create_task(
+        emergency_watcher_service.run_polling(
+            session_factory=SessionLocal,
+            interval_seconds=settings.EMERGENCY_POLL_INTERVAL_SECONDS,
+        )
+    )
     app.state.news_watcher_task = news_watcher_task
+    app.state.emergency_watcher_task = emergency_watcher_task
 
     try:
         yield
     finally:
-        news_watcher_task.cancel()
-        try:
-            await news_watcher_task
-        except asyncio.CancelledError:
-            pass
+        for task in (news_watcher_task, emergency_watcher_task):
+            task.cancel()
+            try:
+                await task
+            except asyncio.CancelledError:
+                pass
 
 
 app = FastAPI(title="Display API", version="1.0", lifespan=lifespan)
@@ -44,4 +53,5 @@ app.add_middleware(
 app.include_router(health.router)
 app.include_router(displays.router)
 app.include_router(news.router)
+app.include_router(emergency.router)
 app.include_router(ws.router)
