@@ -13,10 +13,7 @@ class Template(Base):
     __tablename__ = "templates"
 
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    title: Mapped[str] = mapped_column(String, nullable=False)
-    theme: Mapped[str] = mapped_column(String, nullable=False, default="light")
-    grid_columns: Mapped[int] = mapped_column(Integer, nullable=False, default=4)
-    background_url: Mapped[str | None] = mapped_column(String, nullable=True)
+    # Keep a single JSONB column `layout` that carries all frontend-provided template data.
     layout: Mapped[dict[str, Any]] = mapped_column(JSONB, nullable=False, default=dict)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
@@ -34,3 +31,34 @@ class Template(Base):
     display_assignments: Mapped[list["DisplayTemplateAssignment"]] = relationship(
         back_populates="template",
     )
+
+    # Provide convenient accessors for legacy fields by reading from `layout`.
+    @property
+    def title(self) -> str | None:
+        if isinstance(self.layout, dict):
+            return self.layout.get("title")
+        return None
+
+    @property
+    def theme(self) -> str:
+        if isinstance(self.layout, dict):
+            return self.layout.get("theme") or "light"
+        return "light"
+
+    @property
+    def grid_columns(self) -> int:
+        if isinstance(self.layout, dict):
+            try:
+                gc = self.layout.get("grid_columns")
+                if gc is None:
+                    return 4
+                return int(gc)
+            except Exception:
+                return 4
+        return 4
+
+    @property
+    def background_url(self) -> str | None:
+        if isinstance(self.layout, dict):
+            return self.layout.get("background_url")
+        return None
