@@ -9,7 +9,7 @@ class ClientAPI:
         self.api_key = settings.API_KEY
         self.params = {"token": self.api_key}
         self.timeout = timeout
-        self.transport = httpx.HTTPTransport(retries=settings.MAX_RETRIES)
+        self.transport = httpx.AsyncHTTPTransport(retries=settings.MAX_RETRIES)
 
     async def fetch_data(self, endpoint: str, **params):
         request_params = {

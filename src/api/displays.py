@@ -17,6 +17,6 @@ async def display_state(display_id: uuid.UUID, db: AsyncSession = Depends(get_db
     state = await display_state_service.get_display_state(db, display_id)
     if state is None:
         logger.warning("Дисплей не найден: %s", display_id)
-        raise HTTPException(status_code=404, detail="Display not found")
+        raise HTTPException(status_code=404, detail="Дисплей не найден")
     logger.debug("Состояние дисплея найдено для=%s", display_id)
     return state

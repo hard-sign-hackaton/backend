@@ -41,6 +41,16 @@ LOGGING_CONFIG = {
             "level": settings.LOG_LEVEL,
             "propagate": False,
         },
+        "httpx": {
+            "handlers": ["console"],
+            "level": "WARNING",
+            "propagate": False,
+        },
+        "httpcore": {
+            "handlers": ["console"],
+            "level": "WARNING",
+            "propagate": False,
+        },
     },
     "root": {
         "handlers": ["console"],
