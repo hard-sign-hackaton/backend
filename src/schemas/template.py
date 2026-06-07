@@ -1,10 +1,12 @@
-from template_widget import TemplateWidgetOut
+from __future__ import annotations
+
 import uuid
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel, Field
 
+from schemas.template_widget import TemplateWidgetOut
 
 
 
@@ -35,4 +37,4 @@ class TemplateOut(TemplateBase):
     widgets: List[TemplateWidgetOut] = []
 
     class Config:
-        orm_mode = True
+        from_attributes = True
