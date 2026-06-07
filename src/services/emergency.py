@@ -3,7 +3,7 @@ import uuid
 from datetime import datetime, timedelta, timezone
 from typing import Any
 
-from sqlalchemy import select
+from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.models import Display, DisplayGroupMember, EmergencyEvent, EmergencyTarget
@@ -91,6 +91,52 @@ class EmergencyService:
             return list(result.scalars().all())
 
         raise EmergencyServiceError(f"Неизвестный target_type: {target_type}")
+
+    async def get_display_ids_for_emergency(
+        self,
+        db: AsyncSession,
+        emergency_id: uuid.UUID,
+    ) -> list[uuid.UUID]:
+        result = await db.execute(
+            select(EmergencyTarget).where(EmergencyTarget.emergency_event_id == emergency_id)
+        )
+        targets = result.scalars().all()
+
+        display_ids = []
+        for target in targets:
+            display_ids.extend(
+                await self.get_display_ids_for_target(
+                    db=db,
+                    target_type=target.target_type,
+                    display_id=target.display_id,
+                    display_group_id=target.display_group_id,
+                )
+            )
+
+        return list(dict.fromkeys(display_ids))
+
+    async def delete_emergency(
+        self,
+        db: AsyncSession,
+        emergency_id: uuid.UUID,
+    ) -> tuple[EmergencyEvent | None, list[uuid.UUID]]:
+        emergency = await db.get(EmergencyEvent, emergency_id)
+        if emergency is None:
+            return None, []
+
+        display_ids = await self.get_display_ids_for_emergency(db, emergency_id)
+        await db.execute(
+            delete(EmergencyTarget).where(EmergencyTarget.emergency_event_id == emergency_id)
+        )
+        await db.delete(emergency)
+        await db.flush()
+
+        logger.info(
+            "ЧС удалена: emergency_id=%s displays_count=%s",
+            emergency_id,
+            len(display_ids),
+        )
+        return emergency, display_ids
 
     def build_emergency_event(
         self,
