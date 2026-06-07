@@ -15,7 +15,7 @@ class Display(Base):
     title: Mapped[str] = mapped_column(String, nullable=False)
     location: Mapped[str | None] = mapped_column(String, nullable=True)
     status: Mapped[str] = mapped_column(String, nullable=False, default="offline", index=True)
-    pairing_code: Mapped[str] = mapped_column(String, nullable=False, unique=True, index=True)
+    pairing_code: Mapped[str | None] = mapped_column(String, nullable=False, unique=True, index=True)
     ujin_complex_id: Mapped[int] = mapped_column(Integer, nullable=False)
     ujin_building_id: Mapped[int] = mapped_column(Integer, nullable=False, index=True)
     last_seen_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
