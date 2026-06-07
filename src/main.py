@@ -6,6 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from src.config import settings
 from src.core.database import SessionLocal
 from src.api import displays, emergency, health, news, ws
+from src.api import displays, health, news, ws, templates
 from src.logging_config import setup_logging
 from src.services.emergency_watcher import emergency_watcher_service
 from src.services.news_watcher import news_watcher_service
@@ -54,4 +55,5 @@ app.include_router(health.router)
 app.include_router(displays.router)
 app.include_router(news.router)
 app.include_router(emergency.router)
+app.include_router(templates.router)
 app.include_router(ws.router)
