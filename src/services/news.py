@@ -1,3 +1,5 @@
+import hashlib
+import json
 import logging
 from datetime import date, datetime, timedelta, timezone
 
@@ -57,6 +59,33 @@ class NewsService:
             len(relevant_items),
         )
         return relevant_items
+
+    def build_news_signature(self, items: list[dict]) -> str:
+        signature_payload = [
+            {
+                "id": item.get("id"),
+                "title": item.get("title"),
+                "text": item.get("text"),
+                "date": item.get("date"),
+            }
+            for item in items
+        ]
+        serialized_payload = json.dumps(
+            signature_payload,
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(",", ":"),
+        )
+        return hashlib.sha256(serialized_payload.encode("utf-8")).hexdigest()
+
+    @staticmethod
+    def build_news_widget_event(building_id: int, items: list[dict]) -> dict:
+        return {
+            "type": "widget_updated",
+            "widget": "news",
+            "building_id": building_id,
+            "items": items,
+        }
 
     def _parse_publication_date(self, item: dict) -> date | None:
         raw_date = item.get("date")

@@ -1,5 +1,6 @@
 import logging
 import uuid
+from collections.abc import Iterable
 from collections import defaultdict
 from typing import Any
 
@@ -61,6 +62,26 @@ class ConnectionManager:
             delivered_count,
         )
         return delivered_count > 0
+
+    async def send_to_displays(
+        self,
+        display_ids: Iterable[uuid.UUID],
+        message: dict[str, Any],
+    ) -> int:
+        unique_display_ids = list(dict.fromkeys(display_ids))
+        delivered_displays_count = 0
+
+        for display_id in unique_display_ids:
+            delivered = await self.send_to_display(display_id, message)
+            if delivered:
+                delivered_displays_count += 1
+
+        logger.info(
+            "Рассылка WebSocket по списку дисплеев: displays_count=%s delivered_displays=%s",
+            len(unique_display_ids),
+            delivered_displays_count,
+        )
+        return delivered_displays_count
 
     async def broadcast(self, message: dict[str, Any]) -> None:
         logger.info("WebSocket broadcast: displays_count=%s", len(self._connections))
