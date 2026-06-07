@@ -6,7 +6,7 @@ class Settings(BaseSettings):
     HOST: str = "0.0.0.0"
     PORT: int = 8000
     DATABASE_URL: str = "postgresql+asyncpg://postgres:postgres@postgres-db:5432/DisplayDB"
-    CORS_ORIGINS: List[str] = ["http://localhost:3000"]
+    CORS_ORIGINS: List[str] = ["http://localhost:5173"]
     PASSWORD_SALT: str = "salt"
     API_KEY : str = "api_key"
     API_URL: str = "https://hck-api.unicorn.icu"
