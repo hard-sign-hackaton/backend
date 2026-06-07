@@ -75,13 +75,19 @@ class DisplayStateService:
             for widget, static_content in widgets_result.all()
         ]
 
+        data = template.layout or {}
+        title = data.get("title") if isinstance(data, dict) else None
+        theme = data.get("theme") if isinstance(data, dict) else None
+        grid_columns = data.get("grid_columns") if isinstance(data, dict) else None
+        background_url = data.get("background_url") if isinstance(data, dict) else None
+
         return {
             "id": str(template.id),
-            "title": template.title,
-            "theme": template.theme,
-            "grid_columns": template.grid_columns,
-            "background_url": template.background_url,
-            "layout": template.layout,
+            "title": title or getattr(template, "title", None),
+            "theme": theme or getattr(template, "theme", "light"),
+            "grid_columns": grid_columns or getattr(template, "grid_columns", 4),
+            "background_url": background_url or getattr(template, "background_url", None),
+            "layout": data,
             "assigned_at": self._to_iso(assignment.assigned_at),
             "widgets": widgets,
         }
